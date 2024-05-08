@@ -341,7 +341,7 @@ export class OpenPay {
   };
 
   public stores: IOpenPay.SDK.Stores = {
-    list: async (query) => await this.sendRequest('stores', { query }),
+    list: async (query) => await this.sendStoreRequest('stores', { query }),
   };
 
   public pse: IOpenPay.SDK.Pse = {
