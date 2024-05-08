@@ -2,18 +2,34 @@
   "name": "openpay",
   "description": "Openpay library",
   "version": "2.0.1",
-  "dependencies": {
-    "underscore": "1.13.6",
-    "urllib": "^2.36.1"
+  "repository": "https://github.com/open-pay/openpay-node",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/openpay.cjs",
+  "module": "./dist/openpay.js",
+  "types": "./dist/openpay.d.cts",
+  "exports": {
+    ".": {
+      "types": "./dist/openpay.d.ts",
+      "require": "./dist/openpay.cjs",
+      "import": "./dist/openpay.js"
+    }
   },
-  "main": "lib/openpay.js",
-  "devDependencies": {
-    "mocha": "10.2.0"
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "mocha"
+    "build": "rimraf dist && tsup src/*.ts --format cjs,esm --dts --minify",
+    "lint": "biome lint ./src"
   },
-  "engines": {
-    "node": ">=0.6.x"
+  "devDependencies": {
+    "@biomejs/biome": "^1.7.3",
+    "@types/node": "^20.12.10",
+    "rimraf": "^5.0.5",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "ofetch": "^1.3.4"
   }
 }
