@@ -205,6 +205,7 @@ export class OpenPay {
   // TODO: Groups
 }
 
+// TODO: Remove. Only used to test IDE intellisense
 async function main() {
   const client = new OpenPay({ isProductionReady: false, merchantId: '', privateKey: '', countryCode: 'mx' });
 }
