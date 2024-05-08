@@ -15,11 +15,9 @@
       "import": "./dist/openpay.js"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
-    "build": "rimraf dist && tsup src/*.ts --format cjs,esm --dts --minify",
+    "build": "rimraf dist && tsup src/*.ts --format cjs,esm --dts --no-splitting",
     "lint": "biome lint ./src"
   },
   "devDependencies": {
