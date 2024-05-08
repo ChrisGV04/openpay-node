@@ -22,9 +22,13 @@ export class OpenPay {
   constructor(options: IOpenPay.Options) {
     this.merchantId = options.merchantId;
     this.privateKey = options.privateKey;
-    this.isSandbox = options.isProductionReady;
+    this.isSandbox = !options.isProductionReady;
 
     this.setBaseUrl(options.countryCode ?? 'mx');
+  }
+
+  public setTimeout(ms: number) {
+    this.timeout = ms;
   }
 
   private setBaseUrl(countryCode: IOpenPay.Countries) {
@@ -56,7 +60,7 @@ export class OpenPay {
       timeout: this.timeout,
       method: options?.method || 'GET',
       headers: {
-        Authorization: `Basic ${this.privateKey}:`,
+        Authorization: `Basic ${Buffer.from(`${this.privateKey}:`).toString('base64')}`,
       },
     });
   }
@@ -70,7 +74,7 @@ export class OpenPay {
       timeout: this.timeout,
       method: options.method || 'GET',
       headers: {
-        Authorization: `Basic ${this.privateKey}:`,
+        Authorization: `Basic ${Buffer.from(`${this.privateKey}:`).toString('base64')}`,
       },
     });
   }

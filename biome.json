@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.7.3/schema.json",
   "files": {
-    "ignore": ["./lib/**", "./dist/**"]
+    "ignore": ["./lib/**", "./dist/**", "./test/**"]
   },
   "formatter": {
     "indentStyle": "space",
