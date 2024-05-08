@@ -1,6 +1,6 @@
 export namespace IOpenPay {
   export type Countries = 'mx' | 'co' | 'pe';
-  export type Currency = 'MXN' | 'USD';
+  export type Currency = 'MXN' | 'USD' | 'COP' | 'PEN';
   export type PaymentMonths = 3 | 6 | 9 | 12 | 18;
 
   export interface Error {
@@ -29,6 +29,31 @@ export namespace IOpenPay {
     country_code: string;
   }
 
+  export interface BasicListQuery {
+    creation?: string;
+    'creation[gte]'?: string;
+    'creation[lte]'?: string;
+    offset?: number;
+    limit?: number;
+  }
+
+  export interface Customer {
+    id: string;
+    creation_date: string;
+    name: string;
+    last_name: string;
+    email: string;
+    phone_number: string; // TODO: Check type. Docs have mixed type (string, number)
+    status: 'active' | 'deleted';
+    balance: number;
+    clabe: string; // TODO: Check type. Docs have mixed type (string, number)
+    address: IOpenPay.Address;
+    store: {
+      reference: string;
+      barcode_url: string;
+    };
+  }
+
   export namespace Customer {
     export interface CreateInput {
       external_id?: string;
@@ -39,6 +64,12 @@ export namespace IOpenPay {
       phone_number?: string;
       address?: IOpenPay.Address;
     }
+
+    export interface ListQuery extends IOpenPay.BasicListQuery {
+      external_id?: string;
+    }
+
+    export type UpdateInput = Omit<IOpenPay.Customer.CreateInput, 'external_id' | 'requires_account'>;
   }
 
   export interface Card {
@@ -84,13 +115,7 @@ export namespace IOpenPay {
       merchant_id?: string;
     }
 
-    export interface ListQuery {
-      creation?: string;
-      'creation[gte]'?: string;
-      'creation[lte]'?: string;
-      offset?: number;
-      limit?: number;
-    }
+    export type ListQuery = IOpenPay.BasicListQuery;
   }
 
   export namespace Transaction {
@@ -201,13 +226,8 @@ export namespace IOpenPay {
       amount?: number;
     }
 
-    export interface ListQuery {
+    export interface ListQuery extends IOpenPay.BasicListQuery {
       order_id?: string;
-      creation?: string;
-      'creation[gte]'?: string;
-      'creation[lte]'?: string;
-      offset?: number;
-      limit?: number;
       amount?: number;
       'amount[gte]'?: number;
       'amount[lte]'?: number;
@@ -237,12 +257,7 @@ export namespace IOpenPay {
       };
     }
 
-    export interface ListQuery {
-      creation?: string;
-      'creation[gte]'?: string;
-      'creation[lte]'?: string;
-      offset?: number;
-      limit?: number;
+    export interface ListQuery extends IOpenPay.BasicListQuery {
       amount?: number;
       'amount[gte]'?: number;
       'amount[lte]'?: number;
@@ -258,13 +273,7 @@ export namespace IOpenPay {
       order_id?: string;
     }
 
-    export interface ListQuery {
-      creation?: string;
-      'creation[gte]'?: string;
-      'creation[lte]'?: string;
-      offset?: number;
-      limit?: number;
-    }
+    export type ListQuery = IOpenPay.BasicListQuery;
   }
 
   export interface Store {
@@ -360,13 +369,71 @@ export namespace IOpenPay {
       trial_days?: number;
     }
 
-    export interface ListQuery {
-      creation?: string;
-      'creation[gte]'?: string;
-      'creation[lte]'?: string;
-      offset?: number;
-      limit?: number;
+    export type ListQuery = IOpenPay.BasicListQuery;
+  }
+
+  export namespace Transfers {
+    export interface CreateInput {
+      customer_id: string;
+      amount: number;
+      description: string;
+      order_id?: string;
     }
+
+    export type ListQuery = IOpenPay.BasicListQuery;
+  }
+
+  export interface Subscription {
+    id: string;
+    creation_date: string;
+    cancel_at_period_end: boolean; // TODO: Check type. Docs have mixed types (string, boolean)
+    charge_date: string; // TODO: Check type. Docs have mixed types (string, number)
+    current_period_number: number;
+    period_end_date: string; // TODO: Check type. Docs have mixed types (string, number)
+    trial_end_date: string; // TODO: Check type. Docs have mixed types (string, number)
+    plan_id: string; // TODO: Check type. Docs have mixed types (string, number)
+    status: 'active' | 'trial' | 'past_due' | 'unpaid' | 'cancelled';
+    customer_id: string;
+    card: IOpenPay.Card;
+  }
+
+  export namespace Subscription {
+    export interface CreateInput {
+      plan_id: string;
+      trial_end_date?: string;
+      source_id?: string;
+      card?: IOpenPay.Card;
+      device_session_id?: string;
+    }
+
+    export interface UpdateInput {
+      cancel_at_period_end?: boolean;
+      trial_end_date?: string;
+      source_id?: string;
+      card?: IOpenPay.Card;
+    }
+
+    export type ListQuery = IOpenPay.BasicListQuery;
+  }
+
+  export interface BankAccount {
+    id: string;
+    holder_name: string;
+    alias: string | null;
+    clabe: string;
+    bank_name: string;
+    bank_code: string;
+    creation_date: string;
+  }
+
+  export namespace BankAccount {
+    export interface CreateInput {
+      holder_name: string;
+      alias?: string;
+      clabe: string;
+    }
+
+    export type ListQuery = IOpenPay.BasicListQuery;
   }
 
   export namespace SDK {
@@ -423,6 +490,73 @@ export namespace IOpenPay {
       get(planId: string): Promise<IOpenPay.Plan>;
       update(planId: string, data: IOpenPay.Plan.UpdateInput): Promise<IOpenPay.Plan>;
       delete(planId: string): Promise<void>;
+    }
+
+    export interface Customers {
+      create(data: IOpenPay.Customer.CreateInput): Promise<IOpenPay.Customer>;
+      list(query?: IOpenPay.Customer.ListQuery): Promise<IOpenPay.Customer[]>;
+      get(customerId: string): Promise<IOpenPay.Customer>;
+      update(customerId: string, data: IOpenPay.Customer.UpdateInput): Promise<IOpenPay.Customer>;
+      delete(customerId: string): Promise<void>;
+
+      charges: {
+        create(customerId: string, data: IOpenPay.Charge.CreateInput): Promise<IOpenPay.Transaction>;
+        list(customerId: string, query?: IOpenPay.Charge.ListQuery): Promise<IOpenPay.Transaction[]>;
+        get(customerId: string, transactionId: string): Promise<IOpenPay.Transaction>;
+        capture(
+          customerId: string,
+          transactionId: string,
+          data: IOpenPay.Charge.CaptureInput,
+        ): Promise<IOpenPay.Transaction>;
+        refund(
+          customerId: string,
+          transactionId: string,
+          data: IOpenPay.Charge.RefundInput,
+        ): Promise<IOpenPay.Transaction>;
+      };
+
+      transfers: {
+        create(customerId: string, data: IOpenPay.Transfers.CreateInput): Promise<IOpenPay.Transaction>;
+        list(customerId: string, query?: IOpenPay.Transfers.ListQuery): Promise<IOpenPay.Transaction[]>;
+        get(customerId: string, transactionId: string): Promise<IOpenPay.Transaction>;
+      };
+
+      payouts: {
+        create(customerId: string, data: IOpenPay.Payout.CreateInput): Promise<IOpenPay.Transaction>;
+        list(customerId: string, query?: IOpenPay.Payout.ListQuery): Promise<IOpenPay.Transaction[]>;
+        get(customerId: string, transactionId: string): Promise<IOpenPay.Transaction>;
+      };
+
+      subscriptions: {
+        create(customerId: string, data: IOpenPay.Subscription.CreateInput): Promise<IOpenPay.Subscription>;
+        list(customerId: string, query?: IOpenPay.Subscription.ListQuery): Promise<IOpenPay.Subscription[]>;
+        get(customerId: string, subscriptionId: string): Promise<IOpenPay.Subscription>;
+        update(
+          customerId: string,
+          subscriptionId: string,
+          data: IOpenPay.Subscription.UpdateInput,
+        ): Promise<IOpenPay.Subscription>;
+        delete(customerId: string, subscriptionId: string): Promise<void>;
+      };
+
+      cards: {
+        create(customerId: string, data: IOpenPay.Card.CreateInput): Promise<IOpenPay.Card>;
+        list(customerId: string, query?: IOpenPay.Card.ListQuery): Promise<IOpenPay.Card[]>;
+        get(customerId: string, cardId: string): Promise<IOpenPay.Card>;
+        delete(customerId: string, cardId: string): Promise<void>;
+        update(customerId: string, cardId: string, data: IOpenPay.Card.UpdateInput): Promise<IOpenPay.Card>;
+      };
+
+      bankaccounts: {
+        create(customerId: string, data: IOpenPay.BankAccount.CreateInput): Promise<IOpenPay.BankAccount>;
+        list(customerId: string, query?: IOpenPay.BankAccount.ListQuery): Promise<IOpenPay.BankAccount[]>;
+        get(customerId: string, bankId: string): Promise<IOpenPay.BankAccount>;
+        delete(customerId: string, bankId: string): Promise<void>;
+      };
+
+      pse: {
+        create(customerId: string, data: IOpenPay.Charge.CreateInput): Promise<IOpenPay.Transaction>;
+      };
     }
   }
 }

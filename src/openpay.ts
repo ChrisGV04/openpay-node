@@ -121,7 +121,157 @@ export class OpenPay {
     list: async (query) => await this.sendRequest(`${this.merchantId}/fees`, { query }),
   };
 
-  // TODO: Customers
+  public customers: IOpenPay.SDK.Customers = {
+    create: async (data) =>
+      await this.sendRequest(`${this.merchantId}/customers`, {
+        method: 'POST',
+        body: data,
+      }),
+
+    list: async (query) => await this.sendRequest(`${this.merchantId}/customers`, { query }),
+
+    get: async (customerId) => await this.sendRequest(`${this.merchantId}/customers/${customerId}`),
+
+    delete: async (customerId) =>
+      await this.sendRequest(`${this.merchantId}/customers/${customerId}`, { method: 'DELETE' }),
+
+    update: async (customerId, data) =>
+      await this.sendRequest(`${this.merchantId}/customers/${customerId}`, {
+        method: 'PUT',
+        body: data,
+      }),
+
+    charges: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/charges`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      capture: async (customerId, txnId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/charges/${txnId}/capture`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      get: async (customerId, txnId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/charges/${txnId}`),
+
+      list: async (customerId, query) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/charges`, { query }),
+
+      refund: async (customerId, txnId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/charges/${txnId}/refund`, {
+          method: 'POST',
+          body: data,
+        }),
+    },
+
+    transfers: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/transfers`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      get: async (customerId, txnId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/transfers/${txnId}`),
+
+      list: async (customerId, query) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/transfers`, { query }),
+    },
+
+    payouts: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/payouts`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      get: async (customerId, txnId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/payouts/${txnId}`),
+
+      list: async (customerId, query) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/payouts`, { query }),
+    },
+
+    subscriptions: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/subscriptions`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      get: async (customerId, subId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/subscriptions/${subId}`),
+
+      list: async (customerId, query) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/subscriptions`, { query }),
+
+      update: async (customerId, subId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/subscriptions/${subId}`, {
+          method: 'PUT',
+          body: data,
+        }),
+
+      delete: async (customerId, subId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/subscriptions/${subId}`, {
+          method: 'DELETE',
+        }),
+    },
+
+    cards: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/cards`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      get: async (customerId, cardId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/cards/${cardId}`),
+
+      list: async (customerId, query) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/cards`, { query }),
+
+      update: async (customerId, cardId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/cards/${cardId}`, {
+          method: 'PUT',
+          body: data,
+        }),
+
+      delete: async (customerId, cardId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/cards/${cardId}`, {
+          method: 'DELETE',
+        }),
+    },
+
+    bankaccounts: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/bankaccounts`, {
+          method: 'POST',
+          body: data,
+        }),
+
+      get: async (customerId, bankId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/bankaccounts/${bankId}`),
+
+      list: async (customerId, query) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/bankaccounts`, { query }),
+
+      delete: async (customerId, bankId) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/bankaccounts/${bankId}`, {
+          method: 'DELETE',
+        }),
+    },
+
+    pse: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/charges`, {
+          method: 'POST',
+          body: data,
+        }),
+    },
+  };
 
   public cards: IOpenPay.SDK.Cards = {
     create: async (data) =>
@@ -201,8 +351,6 @@ export class OpenPay {
         body: data,
       }),
   };
-
-  // TODO: Groups
 }
 
 // TODO: Remove. Only used to test IDE intellisense
