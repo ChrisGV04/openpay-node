@@ -436,6 +436,21 @@ export namespace IOpenPay {
     export type ListQuery = IOpenPay.BasicListQuery;
   }
 
+  export namespace Checkout {
+    export type Status = 'available' | 'other';
+
+    export interface CreateInput {
+      amount: number;
+      description: string;
+      order_id?: string;
+      currency: IOpenPay.Currency;
+      redirect_url: string;
+      expiration_date?: string;
+      send_email?: boolean;
+      customer: Pick<IOpenPay.Customer, 'name' | 'last_name' | 'phone_number' | 'email'>;
+    }
+  }
+
   export namespace SDK {
     export interface Charges {
       create(data: IOpenPay.Charge.CreateInput): Promise<IOpenPay.Transaction>;
@@ -557,6 +572,19 @@ export namespace IOpenPay {
       pse: {
         create(customerId: string, data: IOpenPay.Charge.CreateInput): Promise<IOpenPay.Transaction>;
       };
+
+      checkouts: {
+        // TODO: Find types. Missing in docs
+        create(customerId: string, data: IOpenPay.Checkout.CreateInput): Promise<any>;
+      };
+    }
+
+    // TODO: Find types. Missing in docs
+    export interface Checkouts {
+      create(data: IOpenPay.Checkout.CreateInput): Promise<any>;
+      list(query?: any): Promise<any[]>;
+      get(checkoutId: string): Promise<any>;
+      update(checkoutId: string, status: IOpenPay.Checkout.Status, data: any): Promise<any>;
     }
   }
 }

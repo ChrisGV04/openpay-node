@@ -271,6 +271,14 @@ export class OpenPay {
           body: data,
         }),
     },
+
+    checkouts: {
+      create: async (customerId, data) =>
+        await this.sendRequest(`${this.merchantId}/customers/${customerId}/checkouts`, {
+          method: 'POST',
+          body: data,
+        }),
+    },
   };
 
   public cards: IOpenPay.SDK.Cards = {
@@ -349,6 +357,25 @@ export class OpenPay {
       await this.sendRequest(`${this.merchantId}/charges`, {
         method: 'POST',
         body: data,
+      }),
+  };
+
+  public checkouts: IOpenPay.SDK.Checkouts = {
+    create: async (data) =>
+      await this.sendRequest(`${this.merchantId}/checkouts`, {
+        method: 'POST',
+        body: data,
+      }),
+
+    list: async (query) => await this.sendRequest(`${this.merchantId}/checkouts`, { query }),
+
+    get: async (checkoutId) => await this.sendRequest(`${this.merchantId}/checkouts/${checkoutId}`),
+
+    update: async (checkoutId, status, data) =>
+      await this.sendRequest(`${this.merchantId}/checkouts/${checkoutId}`, {
+        method: 'PUT',
+        body: data,
+        query: { status },
       }),
   };
 }
