@@ -3,14 +3,12 @@ import type { IOpenPay } from '../dist/openpay';
 import { assert, describe, expect, it } from 'vitest';
 import { OpenPay } from '../dist/openpay';
 
-const testPayouts = false;
-
-describe('Test the OpenPay SDK', () => {
+describe('Test the OpenPay Colombia SDK', () => {
   const openpay = new OpenPay({
     merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
-    countryCode: 'mx',
+    countryCode: 'co',
   });
   const device_session_id = process.env.OPENPAY_DEVICE_SESSION_ID ?? '';
 
@@ -25,6 +23,8 @@ describe('Test the OpenPay SDK', () => {
 
   const testWebhook: IOpenPay.Webhook.CreateInput = {
     url: process.env.OPENPAY_WEBHOOK_TEST_URL ?? '',
+    user: 'juanito',
+    password: 'supersecure',
     event_types: [
       'charge.refunded',
       'charge.failed',
@@ -61,7 +61,6 @@ describe('Test the OpenPay SDK', () => {
   ////////////////////////////////
 
   let testCustomerId = '';
-  let testSecondaryCustomerId = '';
   const testCustomer: IOpenPay.Customer.CreateInput = {
     name: 'Juan',
     last_name: 'Pérez',
@@ -156,36 +155,6 @@ describe('Test the OpenPay SDK', () => {
   });
 
   ////////////////////////////////
-  // BANK ACCOUNTS TESTS
-  ////////////////////////////////
-
-  let testBankAccountId = '';
-  const testBankAccount: IOpenPay.BankAccount.CreateInput = {
-    clabe: '021180000118359717',
-    holder_name: testCustomer.name,
-  };
-
-  describe('Testing bank accounts API', () => {
-    it('should create a bank account', async () => {
-      const bank = await openpay.customers.bankaccounts.create(testCustomerId, testBankAccount);
-      expect(bank).toBeTruthy();
-      testBankAccountId = bank.id;
-
-      console.log('The bank account:', bank);
-    });
-
-    it('should get all bank accounts of the customer', async () => {
-      await expect(openpay.customers.bankaccounts.list(testCustomerId)).resolves.toBeTruthy();
-    });
-
-    it('should get the test bank account for the customer', async (x) => {
-      await expect(
-        openpay.customers.bankaccounts.get(testCustomerId, testBankAccountId),
-      ).resolves.toBeTruthy();
-    });
-  });
-
-  ////////////////////////////////
   // CHARGE TESTS
   ////////////////////////////////
 
@@ -193,24 +162,19 @@ describe('Test the OpenPay SDK', () => {
   let testCustomerTxnId = '';
 
   const testExistingCardCharge: IOpenPay.Charge.CreateFromCard = {
-    amount: 50,
+    amount: 200,
     source_id: '',
     method: 'card',
+    currency: 'COP',
     device_session_id,
     customer: testCustomer,
     description: 'Test existing card charges',
   };
 
-  const testBankAccountCharge: IOpenPay.Charge.CreateFromBank = {
-    amount: 50,
-    method: 'bank_account',
-    customer: testCustomer,
-    description: 'Test bank account charge',
-  };
-
   const testStoreCharge: IOpenPay.Charge.CreateFromStore = {
     amount: 50,
     method: 'store',
+    currency: 'COP',
     customer: testCustomer,
     description: 'Test store charge',
   };
@@ -236,21 +200,6 @@ describe('Test the OpenPay SDK', () => {
     it('should refund the charge', async () => {
       const txn = await openpay.charges.refund(testTxnId, testRefund);
       expect(txn).toBeTruthy();
-    });
-
-    it('should create charge without capture', async () => {
-      testExistingCardCharge.source_id = testCardId;
-      const txn = await openpay.charges.create({ ...testExistingCardCharge, capture: false });
-      expect(txn).toBeTruthy();
-      testTxnId = txn.id;
-    });
-
-    it('should capture the charge', async () => {
-      await expect(openpay.charges.capture(testTxnId, null)).resolves.toBeTruthy();
-    });
-
-    it('should create charge with new bank account', async () => {
-      await expect(openpay.charges.create(testBankAccountCharge)).resolves.toBeTruthy();
     });
 
     it('should create charge on store', async () => {
@@ -288,178 +237,11 @@ describe('Test the OpenPay SDK', () => {
         ).resolves.toBeTruthy();
       });
 
-      it('should create charge with new bank account', async () => {
-        const { customer, ...data } = testBankAccountCharge;
+      it('should create charge on store', async () => {
+        const { customer, ...data } = testStoreCharge;
         const txn = await openpay.customers.charges.create(testCustomerId, data);
         expect(txn).toBeTruthy();
       });
-    });
-  });
-
-  ////////////////////////////////
-  // TRANSFERS TESTS
-  ////////////////////////////////
-
-  let testTransferTxnId = '';
-
-  describe('Test transfers API', () => {
-    it('should create a transfer', async () => {
-      const secondaryCustomer = await openpay.customers.create(testCustomer);
-      expect(secondaryCustomer).toBeTruthy();
-      testSecondaryCustomerId = secondaryCustomer.id;
-
-      const txn = await openpay.customers.transfers.create(testCustomerId, {
-        customer_id: testSecondaryCustomerId,
-        amount: 1.5,
-        description: 'Test transfer',
-      });
-      expect(txn).toBeTruthy();
-      testTransferTxnId = txn.id;
-    });
-
-    it('should get all customer transfers', async () => {
-      await expect(openpay.customers.transfers.list(testCustomerId)).resolves.toBeTruthy();
-    });
-
-    it('should get the transfer', async () => {
-      await expect(openpay.customers.transfers.get(testCustomerId, testTransferTxnId)).resolves.toBeTruthy();
-    });
-  });
-
-  ////////////////////////////////
-  // PAYOUT TESTS
-  ////////////////////////////////
-
-  let testPayoutTxnId = '';
-  let testCustomerPayoutTxnId = '';
-
-  const testCardPayout: IOpenPay.Payout.CreateInput = {
-    amount: 1.5,
-    method: 'card',
-    description: 'Test card payout',
-    card: {
-      card_number: testCard.card_number,
-      holder_name: testCard.holder_name,
-      bank_code: '012',
-    },
-  };
-
-  const testBankPayout: IOpenPay.Payout.CreateInput = {
-    amount: 1.5,
-    method: 'bank_account',
-    description: 'Test bank payout',
-    bank_account: {
-      clabe: testBankAccount.clabe,
-      holder_name: testBankAccount.holder_name,
-    },
-  };
-
-  if (testPayouts) {
-    describe('Test payouts API', () => {
-      it('should get all payouts', async () => {
-        await expect(openpay.payouts.list()).resolves.toBeTruthy();
-      });
-
-      it('should create a payout to a new card', async () => {
-        const txn = await openpay.payouts.create(testCardPayout);
-        expect(txn).toBeTruthy();
-        testPayoutTxnId = txn.id;
-      });
-
-      it('should get the payout', async () => {
-        await expect(openpay.payouts.get(testPayoutTxnId)).resolves.toBeTruthy();
-      });
-
-      it('should create a payout to a new bank account', async () => {
-        await expect(openpay.payouts.create(testBankPayout)).resolves.toBeTruthy();
-      });
-
-      it('should create a payout to an existing card', async () => {
-        await expect(
-          openpay.payouts.create({
-            method: 'card',
-            destination_id: testCardId,
-            amount: 1.5,
-            description: 'Test payout to existing card',
-          }),
-        ).resolves.toBeTruthy();
-      });
-
-      it('should create a payout to an existing bank account', async () => {
-        await expect(
-          openpay.payouts.create({
-            method: 'bank_account',
-            destination_id: testBankAccountId,
-            amount: 1.5,
-            description: 'Test payout to existing bank account',
-          }),
-        ).resolves.toBeTruthy();
-      });
-
-      describe('Test customer payouts API', () => {
-        it('should create a payout to a new card', async () => {
-          const txn = await openpay.customers.payouts.create(testCustomerId, testCardPayout);
-          expect(txn).toBeTruthy();
-          testCustomerPayoutTxnId = txn.id;
-        });
-
-        it('should get all payouts', async () => {
-          await expect(openpay.customers.payouts.list(testCustomerId)).resolves.toBeTruthy();
-        });
-
-        it('should get the payout', async () => {
-          await expect(
-            openpay.customers.payouts.get(testCustomerId, testCustomerPayoutTxnId),
-          ).resolves.toBeTruthy();
-        });
-
-        it('should create a payout to a new bank account', async () => {
-          await expect(
-            openpay.customers.payouts.create(testCustomerId, testBankPayout),
-          ).resolves.toBeTruthy();
-        });
-
-        it('should create a payout to an existing card', async () => {
-          await expect(
-            openpay.customers.payouts.create(testCustomerId, {
-              method: 'card',
-              destination_id: testCustomerCardId,
-              amount: 1.5,
-              description: 'Test customer payout to existing card',
-            }),
-          ).resolves.toBeTruthy();
-        });
-
-        it('should create a payout to an existing bank account', async () => {
-          await expect(
-            openpay.customers.payouts.create(testCustomerId, {
-              method: 'bank_account',
-              destination_id: testBankAccountId,
-              amount: 1.5,
-              description: 'Test customer payout to existing bank account',
-            }),
-          ).resolves.toBeTruthy();
-        });
-      });
-    });
-  }
-
-  ////////////////////////////////
-  // FEE TESTS
-  ////////////////////////////////
-
-  describe('Test fees API', () => {
-    it('should charge a fee', async () => {
-      const txn = await openpay.fees.create({
-        customer_id: testCustomerId,
-        amount: 1.5,
-        description: 'Test fee',
-      });
-      expect(txn).toBeTruthy();
-    });
-
-    it('should get all fees', async () => {
-      await expect(openpay.fees.list()).resolves.toBeTruthy();
     });
   });
 
@@ -470,10 +252,11 @@ describe('Test the OpenPay SDK', () => {
   let testPlanId = '';
   const testPlan: IOpenPay.Plan.CreateInput = {
     name: 'Test plan',
-    amount: 15.0,
+    amount: 150,
     trial_days: 30,
     retry_times: 2,
     repeat_every: 1,
+    currency: 'COP',
     repeat_unit: 'month',
     status_after_retry: 'cancelled',
   };
@@ -534,6 +317,99 @@ describe('Test the OpenPay SDK', () => {
   });
 
   ////////////////////////////////
+  //  PSE TESTS
+  ////////////////////////////////
+
+  const testPse: IOpenPay.Charge.CreateFromBank = {
+    method: 'bank_account',
+    amount: 10000,
+    currency: 'COP',
+    description: 'Cargo inicial a mi cuenta',
+    iva: '1900',
+    redirect_url: '/',
+    customer: {
+      name: 'Cliente Colombia',
+      last_name: 'Vazquez Juarez',
+      email: 'juan.vazquez@empresa.co',
+      phone_number: '4448936475',
+      requires_account: false,
+      customer_address: {
+        department: 'Medellín',
+        city: 'Antioquía',
+        additional: 'Avenida 7m bis #174-25 Apartamento 637',
+      },
+    },
+  };
+
+  describe('Test PSE API', () => {
+    it('should create a charge to a new client', async () => {
+      const txn = await openpay.pse.create(testPse);
+      expect(txn).toBeTruthy();
+    });
+
+    describe('Test customer PSE API', () => {
+      it('should create a charge to an existing user', async () => {
+        const { customer, ...data } = testPse;
+        const txn = await openpay.customers.pse.create(testCustomerId, data);
+        expect(txn).toBeTruthy();
+        testCustomerTxnId = txn.id;
+      });
+    });
+  });
+
+  ////////////////////////////////
+  // TOKEN TESTS
+  ////////////////////////////////
+
+  let testTokenId = '';
+
+  const testToken: IOpenPay.Token.CreateInput = {
+    card_number: '4111111111111111',
+    holder_name: 'Juan Perez Ramirez',
+    expiration_year: '29',
+    expiration_month: '12',
+    cvv2: '110',
+    address: {
+      city: 'Bogotá',
+      country_code: 'CO',
+      postal_code: '110511',
+      line1: 'Av 5 de Febrero',
+      line2: 'Roble 207',
+      line3: 'col carrillo',
+      state: 'Bogota',
+    },
+  };
+
+  describe('Test Token API', () => {
+    it('should create a token', async () => {
+      const token = await openpay.tokens.create(testToken);
+      expect(token).toBeTruthy();
+      testTokenId = token.id;
+    });
+
+    it('should get the token', async () => {
+      await expect(openpay.tokens.get(testTokenId)).resolves.toBeTruthy();
+    });
+  });
+
+  ////////////////////////////////
+  // STORES TESTS
+  ////////////////////////////////
+
+  describe('Test Stores API', () => {
+    it('should list stores by location', async () => {
+      await expect(
+        openpay.stores.list({
+          latitud: 4.65589142889691,
+          longitud: -74.11335673251888,
+          kilometers: 10,
+          amount: 1,
+        }),
+      ).resolves.toBeTruthy();
+    });
+  });
+
+  ////////////////////////////////
   //  DELETION TESTS
   ////////////////////////////////
 
@@ -555,15 +431,8 @@ describe('Test the OpenPay SDK', () => {
       ).resolves.toBeUndefined();
     });
 
-    it("should delete the customer's bank account", async () => {
-      await expect(
-        openpay.customers.bankaccounts.delete(testCustomerId, testBankAccountId),
-      ).resolves.toBeUndefined();
-    });
-
     it('should delete the customers', async () => {
       await expect(openpay.customers.delete(testCustomerId)).resolves.toBeUndefined();
-      await expect(openpay.customers.delete(testSecondaryCustomerId)).resolves.toBeUndefined();
     });
   });
 });

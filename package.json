@@ -15,13 +15,13 @@
       "import": "./dist/openpay.js"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "rimraf dist && tsup src/*.ts --format cjs,esm --dts --no-splitting",
     "lint": "biome lint ./src",
-    "test": "vitest"
+    "test": "vitest run tests",
+    "test:co": "vitest run colombia",
+    "test:pe": "vitest run peru"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.7.2",

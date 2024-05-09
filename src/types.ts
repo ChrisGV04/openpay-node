@@ -52,6 +52,12 @@ export namespace IOpenPay {
       reference: string;
       barcode_url: string;
     };
+    /** COLOMBIA ONLY */
+    customer_address?: {
+      department: string;
+      city: string;
+      additional: string;
+    };
   }
 
   export namespace Customer {
@@ -63,6 +69,8 @@ export namespace IOpenPay {
       requires_account?: boolean;
       phone_number?: string;
       address?: Address;
+      /** COLOMBIA ONLY */
+      customer_address?: Customer['customer_address'];
     }
 
     export interface ListQuery extends BasicListQuery {
@@ -180,12 +188,15 @@ export namespace IOpenPay {
       description: string;
       order_id?: string;
       customer?: Customer.CreateInput;
+      currency?: Currency;
+      redirect_url?: string;
+      /** COLOMBIA ONLY */
+      iva?: string;
     }
 
     export interface CreateFromCard extends CreateBase {
       method: 'card';
       source_id: string;
-      currency?: Currency;
       device_session_id?: string;
       capture?: boolean;
       payment_plan?: { payments: PaymentMonths };
@@ -193,7 +204,6 @@ export namespace IOpenPay {
       use_card_points?: 'NONE' | 'MIXED' | 'ONLY_POINTS';
       confirm?: boolean;
       send_email?: boolean;
-      redirect_url?: string;
       use_3d_secure?: boolean;
     }
 
@@ -210,7 +220,6 @@ export namespace IOpenPay {
     export interface CreateFromAlipay extends CreateBase {
       method: 'alipay';
       due_date?: string;
-      redirect_url: string;
     }
 
     export interface CreateFromIVR extends CreateBase {
@@ -378,6 +387,8 @@ export namespace IOpenPay {
       retry_times?: number;
       status_after_retry: 'unpaid' | 'cancelled';
       trial_days: number;
+      /** @default MXN */
+      currency?: Currency;
     }
 
     export interface UpdateInput {
