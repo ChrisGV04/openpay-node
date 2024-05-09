@@ -7,9 +7,9 @@ export namespace IOpenPay {
     category: 'request' | 'internal' | 'gateway';
     error_code: number;
     description: string;
-    http_code: string; // TODO: Check type. Docs have mixed type (string, number)
+    http_code: number;
     request_id: string;
-    fraud_rules: string[]; // TODO: Check if it ever returns null
+    fraud_rules?: string[];
   }
 
   export interface Options {
@@ -464,6 +464,26 @@ export namespace IOpenPay {
     export type ListQuery = BasicListQuery;
   }
 
+  export interface Checkout {
+    id: string;
+    amount: number;
+    description: string;
+    order_id: string;
+    currency: Currency;
+    iva: string;
+    status: Checkout.Status;
+    checkout_link: string;
+    creation_date: string;
+    expiration_date: string | null;
+    customer: {
+      name: string;
+      email: string;
+      last_name: string;
+      phone_number: string;
+      external_id?: string | null;
+    };
+  }
+
   export namespace Checkout {
     export type Status = 'available' | 'other';
 
@@ -475,7 +495,7 @@ export namespace IOpenPay {
       redirect_url: string;
       expiration_date?: string;
       send_email?: boolean;
-      customer?: Pick<Customer, 'name' | 'last_name' | 'phone_number' | 'email'>;
+      customer: Checkout['customer'];
     }
   }
 
@@ -594,17 +614,15 @@ export namespace IOpenPay {
       };
 
       checkouts: {
-        // TODO: Find types. Missing in docs
-        create(customerId: string, data: Checkout.CreateInput): Promise<any>;
+        create(customerId: string, data: Checkout.CreateInput): Promise<Checkout>;
       };
     }
 
-    // TODO: Find types. Missing in docs
     export interface Checkouts {
-      create(data: Checkout.CreateInput): Promise<any>;
-      list(query?: any): Promise<any[]>;
-      get(checkoutId: string): Promise<any>;
-      update(checkoutId: string, status: Checkout.Status, data: any): Promise<any>;
+      create(data: Checkout.CreateInput): Promise<Checkout>;
+      list(query?: BasicListQuery): Promise<Checkout[]>;
+      get(checkoutId: string): Promise<Checkout>;
+      update(checkoutId: string, status: Checkout.Status, data: any): Promise<Checkout>;
     }
   }
 }
