@@ -3,12 +3,12 @@ import type { IOpenPay } from '../dist/openpay';
 import { assert, describe, expect, it } from 'vitest';
 import { OpenPay } from '../dist/openpay';
 
-describe('Test the OpenPay Colombia SDK', () => {
+describe('Test the OpenPay Perú SDK', () => {
   const openpay = new OpenPay({
     merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
-    countryCode: 'co',
+    countryCode: 'pe',
   });
   const device_session_id = process.env.OPENPAY_DEVICE_SESSION_ID ?? '';
 
@@ -23,8 +23,6 @@ describe('Test the OpenPay Colombia SDK', () => {
 
   const testWebhook: IOpenPay.Webhook.CreateInput = {
     url: process.env.OPENPAY_WEBHOOK_TEST_URL ?? '',
-    user: 'juanito',
-    password: 'supersecure',
     event_types: [
       'charge.refunded',
       'charge.failed',
@@ -62,9 +60,9 @@ describe('Test the OpenPay Colombia SDK', () => {
 
   let testCustomerId = '';
   const testCustomer: IOpenPay.Customer.CreateInput = {
-    name: 'Juan',
-    last_name: 'Pérez',
-    email: 'juan@ejemplo.com',
+    name: 'Marco',
+    last_name: 'Morales Pérez',
+    email: 'marco@ejemplo.com',
     phone_number: '1234567890',
     requires_account: true, // Create account to perform charge/fees/transfer tests
   };
@@ -112,6 +110,7 @@ describe('Test the OpenPay Colombia SDK', () => {
 
   let testCardId = '';
   let testCustomerCardId = '';
+
   const testCard: IOpenPay.Card.CreateInput = {
     card_number: '4111111111111111',
     holder_name: testCustomer.name,
@@ -162,24 +161,22 @@ describe('Test the OpenPay Colombia SDK', () => {
   let testCustomerTxnId = '';
 
   const testExistingCardCharge: IOpenPay.Charge.CreateFromCard = {
-    amount: 200,
+    amount: 716,
     source_id: '',
     method: 'card',
-    currency: 'COP',
+    currency: 'PEN',
     device_session_id,
     customer: testCustomer,
     description: 'Test existing card charges',
   };
 
   const testStoreCharge: IOpenPay.Charge.CreateFromStore = {
-    amount: 50,
+    amount: 716,
     method: 'store',
-    currency: 'COP',
+    currency: 'PEN',
     customer: testCustomer,
     description: 'Test store charge',
   };
-
-  const testRefund: IOpenPay.Charge.RefundInput = { description: 'Testing refund' };
 
   describe('Test charges API', () => {
     it('should get all charges', async () => {
@@ -195,11 +192,6 @@ describe('Test the OpenPay Colombia SDK', () => {
 
     it('should get the created charge', async () => {
       await expect(openpay.charges.get(testTxnId)).resolves.toBeTruthy();
-    });
-
-    it('should refund the charge', async () => {
-      const txn = await openpay.charges.refund(testTxnId, testRefund);
-      expect(txn).toBeTruthy();
     });
 
     it('should create charge on store', async () => {
@@ -231,12 +223,6 @@ describe('Test the OpenPay Colombia SDK', () => {
         await expect(openpay.customers.charges.get(testCustomerId, testCustomerTxnId)).resolves.toBeTruthy();
       });
 
-      it('should refund the charge', async () => {
-        await expect(
-          openpay.customers.charges.refund(testCustomerId, testCustomerTxnId, testRefund),
-        ).resolves.toBeTruthy();
-      });
-
       it('should create charge on store', async () => {
         const { customer, ...data } = testStoreCharge;
         const txn = await openpay.customers.charges.create(testCustomerId, data);
@@ -252,11 +238,11 @@ describe('Test the OpenPay Colombia SDK', () => {
   let testPlanId = '';
   const testPlan: IOpenPay.Plan.CreateInput = {
     name: 'Test plan',
-    amount: 150,
+    amount: 15.0,
     trial_days: 30,
     retry_times: 2,
+    currency: 'PEN',
     repeat_every: 1,
-    currency: 'COP',
     repeat_unit: 'month',
     status_after_retry: 'cancelled',
   };
@@ -317,47 +303,6 @@ describe('Test the OpenPay Colombia SDK', () => {
   });
 
   ////////////////////////////////
-  //  PSE TESTS
-  ////////////////////////////////
-
-  const testPse: IOpenPay.Charge.CreateFromBank = {
-    method: 'bank_account',
-    amount: 10000,
-    currency: 'COP',
-    description: 'Cargo inicial a mi cuenta',
-    iva: '1900',
-    redirect_url: '/',
-    customer: {
-      name: 'Cliente Colombia',
-      last_name: 'Vazquez Juarez',
-      email: 'juan.vazquez@empresa.co',
-      phone_number: '4448936475',
-      requires_account: false,
-      customer_address: {
-        department: 'Medellín',
-        city: 'Antioquía',
-        additional: 'Avenida 7m bis #174-25 Apartamento 637',
-      },
-    },
-  };
-
-  describe('Test PSE API', () => {
-    it('should create a charge to a new client', async () => {
-      const txn = await openpay.pse.create(testPse);
-      expect(txn).toBeTruthy();
-    });
-
-    describe('Test customer PSE API', () => {
-      it('should create a charge to an existing user', async () => {
-        const { customer, ...data } = testPse;
-        const txn = await openpay.customers.pse.create(testCustomerId, data);
-        expect(txn).toBeTruthy();
-        testCustomerTxnId = txn.id;
-      });
-    });
-  });
-
-  ////////////////////////////////
   // TOKEN TESTS
   ////////////////////////////////
 
@@ -370,13 +315,13 @@ describe('Test the OpenPay Colombia SDK', () => {
     expiration_month: '1',
     cvv2: '110',
     address: {
-      city: 'Bogotá',
-      country_code: 'CO',
+      city: 'Lima',
+      country_code: 'PE',
       postal_code: '110511',
       line1: 'Av 5 de Febrero',
       line2: 'Roble 207',
       line3: 'col carrillo',
-      state: 'Bogota',
+      state: 'Lima',
     },
   };
 
@@ -388,24 +333,68 @@ describe('Test the OpenPay Colombia SDK', () => {
     });
 
     it('should get the token', async () => {
-      await expect(openpay.tokens.get(testTokenId)).resolves.toBeTruthy();
+      const token = await openpay.tokens.get(testTokenId);
+      expect(token).toBeTruthy();
+      assert.equal(token.id, testTokenId);
     });
   });
 
   ////////////////////////////////
-  // STORES TESTS
+  // CHECKOUT TESTS
   ////////////////////////////////
 
-  describe('Test Stores API', () => {
-    it('should list stores by location', async () => {
-      await expect(
-        openpay.stores.list({
-          latitud: 4.65589142889691,
-          longitud: -74.11335673251888,
-          kilometers: 10,
-          amount: 1,
-        }),
-      ).resolves.toBeTruthy();
+  let testCheckoutId = '';
+
+  const testCheckout: IOpenPay.Checkout.CreateInput = {
+    amount: 250,
+    currency: 'PEN',
+    send_email: false,
+    order_id: Date.now().toString(),
+    description: 'Link checkout charge',
+    redirect_url: 'https://www.openpay.pe',
+    customer: {
+      email: testCustomer.email,
+      last_name: testCustomer.last_name ?? '',
+      name: testCustomer.name,
+      phone_number: testCustomer.phone_number ?? '',
+    },
+  };
+
+  describe('Test Checkouts API', () => {
+    it('should create a checkout', async () => {
+      const checkout = await openpay.checkouts.create(testCheckout);
+      expect(checkout).toBeTruthy();
+      testCheckoutId = checkout.id;
+
+      console.log('The checkout:', checkout);
+    });
+
+    it('should get the checkout', async () => {
+      const checkout = await openpay.checkouts.get(testCheckoutId);
+      expect(checkout).toBeTruthy();
+      assert.equal(checkout.id, testCheckoutId);
+    });
+
+    it('should update the checkout', async () => {
+      const checkout = await openpay.checkouts.update(testCheckoutId, 'available', {
+        expiration_date: `${today} 23:59`,
+      });
+      expect(checkout).toBeTruthy();
+      assert.equal(checkout.id, testCheckoutId);
+      assert.equal(checkout.status, 'available');
+    });
+
+    it('should get all the checkouts', async () => {
+      await expect(openpay.checkouts.list()).resolves.toBeTruthy();
+    });
+
+    it('should create a customer checkout', async () => {
+      const { customer, order_id, ...data } = testCheckout;
+      const checkout = await openpay.customers.checkouts.create(testCustomerId, {
+        ...data,
+        order_id: (Date.now() + 1).toString(),
+      });
+      expect(checkout).toBeTruthy();
     });
   });
 

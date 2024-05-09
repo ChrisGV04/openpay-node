@@ -470,12 +470,12 @@ export namespace IOpenPay {
     export interface CreateInput {
       amount: number;
       description: string;
-      order_id?: string;
+      order_id: string;
       currency: Currency;
       redirect_url: string;
       expiration_date?: string;
       send_email?: boolean;
-      customer: Pick<Customer, 'name' | 'last_name' | 'phone_number' | 'email'>;
+      customer?: Pick<Customer, 'name' | 'last_name' | 'phone_number' | 'email'>;
     }
   }
 
