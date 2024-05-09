@@ -5,7 +5,7 @@ import { OpenPay } from '../dist/openpay';
 
 const testPayouts = false;
 
-describe('Test the OpenPay SDK', () => {
+describe('Test the OpenPay México SDK', () => {
   const openpay = new OpenPay({
     merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
@@ -227,6 +227,8 @@ describe('Test the OpenPay SDK', () => {
       const txn = await openpay.charges.create(testExistingCardCharge);
       expect(txn).toBeTruthy();
       testTxnId = txn.id;
+
+      console.log('The transaction:', txn);
     });
 
     it('should get the created charge', async () => {
@@ -315,6 +317,8 @@ describe('Test the OpenPay SDK', () => {
       });
       expect(txn).toBeTruthy();
       testTransferTxnId = txn.id;
+
+      console.log('The transfer:', txn);
     });
 
     it('should get all customer transfers', async () => {
@@ -456,6 +460,8 @@ describe('Test the OpenPay SDK', () => {
         description: 'Test fee',
       });
       expect(txn).toBeTruthy();
+
+      console.log('The fee:', txn);
     });
 
     it('should get all fees', async () => {
@@ -483,6 +489,8 @@ describe('Test the OpenPay SDK', () => {
       const plan = await openpay.plans.create(testPlan);
       expect(plan).toBeTruthy();
       testPlanId = plan.id;
+
+      console.log('The plan:', plan);
     });
 
     it('should get all plans', async () => {
