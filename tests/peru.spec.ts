@@ -38,7 +38,7 @@ describe('Test the OpenPay Perú SDK', () => {
       expect(webhook).toBeTruthy();
       testWebhookId = webhook.id;
 
-      console.log('The webhook:', webhook);
+      console.log('The webhook:', webhook.id);
     });
 
     it('should get the webhook', async () => {
@@ -75,7 +75,7 @@ describe('Test the OpenPay Perú SDK', () => {
       expect(customer).toBeTruthy();
       testCustomerId = customer.id;
 
-      console.log('The customer:', customer);
+      console.log('The customer:', customer.id);
     });
 
     it('should get all customers', async () => {
@@ -125,7 +125,7 @@ describe('Test the OpenPay Perú SDK', () => {
       expect(card).toBeTruthy();
       testCardId = card.id;
 
-      console.log('The card:', card);
+      console.log('The card:', card.id);
     });
 
     it('should get all cards', async () => {
@@ -141,6 +141,8 @@ describe('Test the OpenPay Perú SDK', () => {
         const card = await openpay.customers.cards.create(testCustomerId, testCard);
         expect(card).toBeTruthy();
         testCustomerCardId = card.id;
+
+        console.log('The customer card:', card.id);
       });
 
       it('should get all cards of the customer', async () => {
@@ -188,6 +190,8 @@ describe('Test the OpenPay Perú SDK', () => {
       const txn = await openpay.charges.create(testExistingCardCharge);
       expect(txn).toBeTruthy();
       testTxnId = txn.id;
+
+      console.log('The charge to an existing card:', txn.id);
     });
 
     it('should get the created charge', async () => {
@@ -197,6 +201,8 @@ describe('Test the OpenPay Perú SDK', () => {
     it('should create charge on store', async () => {
       const txn = await openpay.charges.create(testStoreCharge);
       expect(txn).toBeTruthy();
+      console.log('The charge on store:', txn.id);
+
       expect(txn.id).toBeTruthy();
       assert.equal(txn.method, 'store');
       assert.equal(txn.payment_method?.type, 'store');
@@ -213,6 +219,8 @@ describe('Test the OpenPay Perú SDK', () => {
         });
         expect(txn).toBeTruthy();
         testCustomerTxnId = txn.id;
+
+        console.log('The customer charge on existing card:', txn.id);
       });
 
       it('should get all charges', async () => {
@@ -227,6 +235,7 @@ describe('Test the OpenPay Perú SDK', () => {
         const { customer, ...data } = testStoreCharge;
         const txn = await openpay.customers.charges.create(testCustomerId, data);
         expect(txn).toBeTruthy();
+        console.log('The customer charge on store:', txn.id);
       });
     });
   });
@@ -252,6 +261,8 @@ describe('Test the OpenPay Perú SDK', () => {
       const plan = await openpay.plans.create(testPlan);
       expect(plan).toBeTruthy();
       testPlanId = plan.id;
+
+      console.log('The plan:', plan.id);
     });
 
     it('should get all plans', async () => {
@@ -282,7 +293,7 @@ describe('Test the OpenPay Perú SDK', () => {
       expect(subscription).toBeTruthy();
       testSubscriptionId = subscription.id;
 
-      console.log('The subscription:', subscription);
+      console.log('The subscription:', subscription.id);
     });
 
     it('should get all the subscriptions', async () => {
@@ -330,6 +341,8 @@ describe('Test the OpenPay Perú SDK', () => {
       const token = await openpay.tokens.create(testToken);
       expect(token).toBeTruthy();
       testTokenId = token.id;
+
+      console.log('The token:', token.id);
     });
 
     it('should get the token', async () => {
@@ -366,7 +379,7 @@ describe('Test the OpenPay Perú SDK', () => {
       expect(checkout).toBeTruthy();
       testCheckoutId = checkout.id;
 
-      console.log('The checkout:', checkout);
+      console.log('The checkout:', checkout.id);
     });
 
     it('should get the checkout', async () => {
@@ -395,6 +408,8 @@ describe('Test the OpenPay Perú SDK', () => {
         order_id: (Date.now() + 1).toString(),
       });
       expect(checkout).toBeTruthy();
+
+      console.log('The customer checkout:', checkout.id);
     });
   });
 

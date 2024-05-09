@@ -43,11 +43,12 @@ export namespace IOpenPay {
     name: string;
     last_name: string;
     email: string;
-    phone_number: string; // TODO: Check type. Docs have mixed type (string, number)
+    phone_number: string;
     status: 'active' | 'deleted';
     balance: number;
-    clabe: string; // TODO: Check type. Docs have mixed type (string, number)
-    address: Address;
+    clabe: string | null;
+    address: Address | null;
+    external_id: string | null;
     store: {
       reference: string;
       barcode_url: string;
@@ -62,13 +63,13 @@ export namespace IOpenPay {
 
   export namespace Customer {
     export interface CreateInput {
-      external_id?: string;
       name: string;
-      last_name?: string;
       email: string;
-      requires_account?: boolean;
-      phone_number?: string;
       address?: Address;
+      last_name?: string;
+      phone_number?: string;
+      requires_account?: boolean;
+      external_id?: string | null;
       /** COLOMBIA ONLY */
       customer_address?: Customer['customer_address'];
     }
@@ -84,10 +85,10 @@ export namespace IOpenPay {
     id: string;
     creation_date: string;
     holder_name: string;
-    card_number: string; // TODO: Test type. Docs have mixed type (number, string)
+    card_number: string;
     cvv2: string;
-    expiration_month: number; // TODO: Test type. Docs have mixed type (number, string)
-    expiration_year: number; // TODO: Test type. Docs have mixed type (number, string)
+    expiration_month: string;
+    expiration_year: string;
     address: Address | null;
     allows_charges: boolean;
     allows_payouts: boolean;
@@ -95,18 +96,18 @@ export namespace IOpenPay {
     type: string;
     bank_name: string;
     bank_code: string;
-    customer_id: string;
-    points_card: boolean;
+    customer_id?: string;
+    points_card?: boolean;
   }
 
   export namespace Card {
     export type CreateInput =
       | {
           holder_name: string;
-          card_number: string; // TODO: Test type. Docs have mixed type (number, string)
+          card_number: string;
           cvv2: string;
-          expiration_month: string; // TODO: Test type. Docs have mixed type (number, string)
-          expiration_year: string; // TODO: Test type. Docs have mixed type (number, string)
+          expiration_month: string;
+          expiration_year: string;
           device_session_id?: string;
           address?: Address;
         }
@@ -118,8 +119,8 @@ export namespace IOpenPay {
     export interface UpdateInput {
       holder_name?: string;
       cvv2?: string;
-      expiration_month?: string; // TODO: Test type. Docs have mixed type (number, string)
-      expiration_year?: string; // TODO: Test type. Docs have mixed type (number, string)
+      expiration_month?: string;
+      expiration_year?: string;
       merchant_id?: string;
     }
 
@@ -140,23 +141,35 @@ export namespace IOpenPay {
     operation_type: Transaction.OperationType;
     method: Transaction.Method;
     creation_date: string;
+    operation_date: string;
     order_id: string | null;
     status: Transaction.Status;
     amount: number;
     description: string;
+    conciliated: boolean;
     error_message: string | null;
     customer_id: string | null;
     currency: Currency;
     bank_account?: BankAccount;
     card?: Card;
     card_points?: CardPoints;
+    gateway_card_present?: string;
+    due_date?: string;
     payment_method?: {
       type: string;
-      reference: string;
-      barcode_url: string;
+      url?: string;
+      reference?: string;
+      barcode_url?: string;
       paybin_reference?: string;
       barcode_paybin_url?: string;
     };
+    fee?: {
+      amount: number;
+      tax: number;
+      currency: Currency;
+    };
+    /** COLOMBIA ONLY */
+    iva?: string | null;
   }
 
   export interface Token {
@@ -330,6 +343,8 @@ export namespace IOpenPay {
     url: string;
     user?: string;
     password?: string;
+    force_host_ssl?: boolean;
+    allow_redirects?: boolean;
     event_types: Webhook.EventTypes[];
     status: 'verified' | 'unverified';
   }
@@ -376,6 +391,8 @@ export namespace IOpenPay {
     status: 'active' | 'deleted';
     status_after_retry: 'unpaid' | 'cancelled';
     trial_days: number;
+    iva?: string | null;
+    default_charge_quantity?: any | null;
   }
 
   export namespace Plan {
@@ -413,15 +430,16 @@ export namespace IOpenPay {
   export interface Subscription {
     id: string;
     creation_date: string;
-    cancel_at_period_end: boolean; // TODO: Check type. Docs have mixed types (string, boolean)
-    charge_date: string; // TODO: Check type. Docs have mixed types (string, number)
+    cancel_at_period_end: boolean;
+    charge_date: string;
     current_period_number: number;
-    period_end_date: string; // TODO: Check type. Docs have mixed types (string, number)
-    trial_end_date: string; // TODO: Check type. Docs have mixed types (string, number)
-    plan_id: string; // TODO: Check type. Docs have mixed types (string, number)
+    period_end_date: string;
+    trial_end_date: string;
+    plan_id: string;
     status: 'active' | 'trial' | 'past_due' | 'unpaid' | 'cancelled';
     customer_id: string;
     card: Card;
+    default_charge_quantity?: any | null;
   }
 
   export namespace Subscription {
@@ -446,6 +464,7 @@ export namespace IOpenPay {
 
   export interface BankAccount {
     id: string;
+    rfc: string | null;
     holder_name: string;
     alias: string | null;
     clabe: string;

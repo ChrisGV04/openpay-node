@@ -40,7 +40,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(webhook).toBeTruthy();
       testWebhookId = webhook.id;
 
-      console.log('The webhook:', webhook);
+      console.log('The webhook:', webhook.id);
     });
 
     it('should get the webhook', async () => {
@@ -78,7 +78,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(customer).toBeTruthy();
       testCustomerId = customer.id;
 
-      console.log('The customer:', customer);
+      console.log('The customer:', customer.id);
     });
 
     it('should get all customers', async () => {
@@ -127,7 +127,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(card).toBeTruthy();
       testCardId = card.id;
 
-      console.log('The card:', card);
+      console.log('The card:', card.id);
     });
 
     it('should get all cards', async () => {
@@ -143,6 +143,8 @@ describe('Test the OpenPay México SDK', () => {
         const card = await openpay.customers.cards.create(testCustomerId, testCard);
         expect(card).toBeTruthy();
         testCustomerCardId = card.id;
+
+        console.log('The customer card:', card.id);
       });
 
       it('should get all cards of the customer', async () => {
@@ -171,7 +173,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(bank).toBeTruthy();
       testBankAccountId = bank.id;
 
-      console.log('The bank account:', bank);
+      console.log('The bank account:', bank.id);
     });
 
     it('should get all bank accounts of the customer', async () => {
@@ -228,7 +230,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(txn).toBeTruthy();
       testTxnId = txn.id;
 
-      console.log('The transaction:', txn);
+      console.log('The charge to existing card:', txn.id);
     });
 
     it('should get the created charge', async () => {
@@ -245,6 +247,8 @@ describe('Test the OpenPay México SDK', () => {
       const txn = await openpay.charges.create({ ...testExistingCardCharge, capture: false });
       expect(txn).toBeTruthy();
       testTxnId = txn.id;
+
+      console.log('The charge without capture:', txn.id);
     });
 
     it('should capture the charge', async () => {
@@ -258,6 +262,8 @@ describe('Test the OpenPay México SDK', () => {
     it('should create charge on store', async () => {
       const txn = await openpay.charges.create(testStoreCharge);
       expect(txn).toBeTruthy();
+      console.log('The charge on store:', txn.id);
+
       expect(txn.id).toBeTruthy();
       assert.equal(txn.method, 'store');
       assert.equal(txn.payment_method?.type, 'store');
@@ -274,6 +280,8 @@ describe('Test the OpenPay México SDK', () => {
         });
         expect(txn).toBeTruthy();
         testCustomerTxnId = txn.id;
+
+        console.log('The charge to existing customer card:', txn.id);
       });
 
       it('should get all charges', async () => {
@@ -294,6 +302,7 @@ describe('Test the OpenPay México SDK', () => {
         const { customer, ...data } = testBankAccountCharge;
         const txn = await openpay.customers.charges.create(testCustomerId, data);
         expect(txn).toBeTruthy();
+        console.log('The charge to customer new bank:', txn.id);
       });
     });
   });
@@ -368,6 +377,8 @@ describe('Test the OpenPay México SDK', () => {
         const txn = await openpay.payouts.create(testCardPayout);
         expect(txn).toBeTruthy();
         testPayoutTxnId = txn.id;
+
+        console.log('The payout:', txn.id);
       });
 
       it('should get the payout', async () => {
@@ -405,6 +416,8 @@ describe('Test the OpenPay México SDK', () => {
           const txn = await openpay.customers.payouts.create(testCustomerId, testCardPayout);
           expect(txn).toBeTruthy();
           testCustomerPayoutTxnId = txn.id;
+
+          console.log('The customer payout:', txn.id);
         });
 
         it('should get all payouts', async () => {
@@ -461,7 +474,7 @@ describe('Test the OpenPay México SDK', () => {
       });
       expect(txn).toBeTruthy();
 
-      console.log('The fee:', txn);
+      console.log('The fee:', txn.id);
     });
 
     it('should get all fees', async () => {
@@ -490,7 +503,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(plan).toBeTruthy();
       testPlanId = plan.id;
 
-      console.log('The plan:', plan);
+      console.log('The plan:', plan.id);
     });
 
     it('should get all plans', async () => {
@@ -521,7 +534,7 @@ describe('Test the OpenPay México SDK', () => {
       expect(subscription).toBeTruthy();
       testSubscriptionId = subscription.id;
 
-      console.log('The subscription:', subscription);
+      console.log('The subscription:', subscription.id);
     });
 
     it('should get all the subscriptions', async () => {
