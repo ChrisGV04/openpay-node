@@ -60,7 +60,7 @@ export namespace IOpenPay {
       name: string;
       last_name?: string;
       email: string;
-      requires_account?: string;
+      requires_account?: boolean;
       phone_number?: string;
       address?: Address;
     }
@@ -80,7 +80,7 @@ export namespace IOpenPay {
     cvv2: string;
     expiration_month: number; // TODO: Test type. Docs have mixed type (number, string)
     expiration_year: number; // TODO: Test type. Docs have mixed type (number, string)
-    address: Address;
+    address: Address | null;
     allows_charges: boolean;
     allows_payouts: boolean;
     brand: string;
@@ -100,7 +100,7 @@ export namespace IOpenPay {
           expiration_month: string; // TODO: Test type. Docs have mixed type (number, string)
           expiration_year: string; // TODO: Test type. Docs have mixed type (number, string)
           device_session_id?: string;
-          address: Address;
+          address?: Address;
         }
       | {
           token_id: string;
@@ -139,9 +139,16 @@ export namespace IOpenPay {
     error_message: string | null;
     customer_id: string | null;
     currency: Currency;
-    bank_account?: any; // TODO: Interface BankAccount
-    card?: any; // TODO: Interface Card
+    bank_account?: BankAccount;
+    card?: Card;
     card_points?: CardPoints;
+    payment_method?: {
+      type: string;
+      reference: string;
+      barcode_url: string;
+      paybin_reference?: string;
+      barcode_paybin_url?: string;
+    };
   }
 
   export interface Token {
@@ -168,18 +175,18 @@ export namespace IOpenPay {
   }
 
   export namespace Charge {
-    interface CreateBase {
+    export interface CreateBase {
       amount: number;
       description: string;
       order_id?: string;
-      customer: Customer.CreateInput;
+      customer?: Customer.CreateInput;
     }
 
-    interface CreateFromCard {
+    export interface CreateFromCard extends CreateBase {
       method: 'card';
       source_id: string;
       currency?: Currency;
-      device_session_id: string;
+      device_session_id?: string;
       capture?: boolean;
       payment_plan?: { payments: PaymentMonths };
       metadata?: Record<string, any>;
@@ -190,23 +197,23 @@ export namespace IOpenPay {
       use_3d_secure?: boolean;
     }
 
-    interface CreateFromStore {
+    export interface CreateFromStore extends CreateBase {
       method: 'store';
       due_date?: string;
     }
 
-    interface CreateFromBank {
+    export interface CreateFromBank extends CreateBase {
       method: 'bank_account';
       due_date?: string;
     }
 
-    interface CreateFromAlipay {
+    export interface CreateFromAlipay extends CreateBase {
       method: 'alipay';
       due_date?: string;
       redirect_url: string;
     }
 
-    interface CreateFromIVR {
+    export interface CreateFromIVR extends CreateBase {
       method: 'card';
       confirm: 'ivr';
       currency?: Currency;
@@ -214,12 +221,16 @@ export namespace IOpenPay {
       send_email?: boolean;
     }
 
-    export type CreateInput = CreateBase &
-      (CreateFromCard | CreateFromStore | CreateFromBank | CreateFromAlipay | CreateFromIVR);
+    export type CreateInput =
+      | CreateFromCard
+      | CreateFromStore
+      | CreateFromBank
+      | CreateFromAlipay
+      | CreateFromIVR;
 
-    export interface CaptureInput {
+    export type CaptureInput = {
       amount?: number;
-    }
+    } | null;
 
     export interface RefundInput {
       description?: string;
@@ -246,11 +257,16 @@ export namespace IOpenPay {
 
   export namespace Payout {
     export interface CreateInput {
-      method: 'bank_account';
+      method: 'bank_account' | 'card';
       amount: number;
       description: string;
       order_id?: string;
       destination_id?: string;
+      card?: {
+        card_number: string;
+        holder_name: string;
+        bank_code: string;
+      };
       bank_account?: {
         clabe: string;
         holder_name: string;
@@ -303,8 +319,8 @@ export namespace IOpenPay {
   export interface Webhook {
     id: string;
     url: string;
-    user: string;
-    password: string;
+    user?: string;
+    password?: string;
     event_types: Webhook.EventTypes[];
     status: 'verified' | 'unverified';
   }
@@ -403,6 +419,7 @@ export namespace IOpenPay {
       trial_end_date?: string;
       source_id?: string;
       card?: Card;
+      card_id?: string;
       device_session_id?: string;
     }
 
