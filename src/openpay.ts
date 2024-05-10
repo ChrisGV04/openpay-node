@@ -11,24 +11,39 @@ const OPEN_PAY_SANDBOX_API_VERSION = 'v1';
 export { IOpenpay } from './types';
 
 export class Openpay {
-  private merchantId: string;
-  private privateKey: string;
-  private isSandbox: boolean;
+  private merchantId = '';
+  private privateKey = '';
+  private isSandbox = true;
   private timeout = 9000; // 9 seconds in milliseconds
 
   private baseUrl = OPEN_PAY_MX_BASE_URL;
   private sandboxUrl = OPEN_PAY_MX_SANDBOX_URL;
 
   constructor(options: IOpenpay.Options) {
-    this.merchantId = options.merchantId;
-    this.privateKey = options.privateKey;
-    this.isSandbox = !options.isProductionReady;
-
-    this.setBaseUrl(options.countryCode ?? 'mx');
+    this.setMerchantId(options.merchantId);
+    this.setPrivateKey(options.privateKey);
+    this.setProductionReady(options.isProductionReady);
+    this.setCountryCode(options.countryCode ?? 'mx');
   }
 
   public setTimeout(ms: number) {
     this.timeout = ms;
+  }
+
+  public setMerchantId(merchantId: string) {
+    this.merchantId = merchantId;
+  }
+
+  public setPrivateKey(privateKey: string) {
+    this.privateKey = privateKey;
+  }
+
+  public setProductionReady(isProductionReady: boolean) {
+    this.isSandbox = !isProductionReady;
+  }
+
+  public setCountryCode(code: IOpenpay.Countries) {
+    this.setBaseUrl(code);
   }
 
   private setBaseUrl(countryCode: IOpenpay.Countries) {
