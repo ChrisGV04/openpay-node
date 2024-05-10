@@ -1,12 +1,12 @@
-import type { IOpenPay } from '../dist/openpay';
+import type { IOpenpay } from '../dist/openpay';
 
 import { assert, describe, expect, it } from 'vitest';
-import { OpenPay } from '../dist/openpay';
+import { Openpay } from '../dist/openpay';
 
 const testPayouts = false;
 
-describe('Test the OpenPay México SDK', () => {
-  const openpay = new OpenPay({
+describe('Test the Openpay México SDK', () => {
+  const openpay = new Openpay({
     merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
@@ -23,7 +23,7 @@ describe('Test the OpenPay México SDK', () => {
 
   let testWebhookId = '';
 
-  const testWebhook: IOpenPay.Webhook.CreateInput = {
+  const testWebhook: IOpenpay.Webhook.CreateInput = {
     url: process.env.OPENPAY_WEBHOOK_TEST_URL ?? '',
     event_types: [
       'charge.refunded',
@@ -62,7 +62,7 @@ describe('Test the OpenPay México SDK', () => {
 
   let testCustomerId = '';
   let testSecondaryCustomerId = '';
-  const testCustomer: IOpenPay.Customer.CreateInput = {
+  const testCustomer: IOpenpay.Customer.CreateInput = {
     name: 'Juan',
     last_name: 'Pérez',
     email: 'juan@ejemplo.com',
@@ -113,7 +113,7 @@ describe('Test the OpenPay México SDK', () => {
 
   let testCardId = '';
   let testCustomerCardId = '';
-  const testCard: IOpenPay.Card.CreateInput = {
+  const testCard: IOpenpay.Card.CreateInput = {
     card_number: '4111111111111111',
     holder_name: testCustomer.name,
     expiration_year: validExpYear,
@@ -162,7 +162,7 @@ describe('Test the OpenPay México SDK', () => {
   ////////////////////////////////
 
   let testBankAccountId = '';
-  const testBankAccount: IOpenPay.BankAccount.CreateInput = {
+  const testBankAccount: IOpenpay.BankAccount.CreateInput = {
     clabe: '021180000118359717',
     holder_name: testCustomer.name,
   };
@@ -194,7 +194,7 @@ describe('Test the OpenPay México SDK', () => {
   let testTxnId = '';
   let testCustomerTxnId = '';
 
-  const testExistingCardCharge: IOpenPay.Charge.CreateFromCard = {
+  const testExistingCardCharge: IOpenpay.Charge.CreateFromCard = {
     amount: 50,
     source_id: '',
     method: 'card',
@@ -203,21 +203,21 @@ describe('Test the OpenPay México SDK', () => {
     description: 'Test existing card charges',
   };
 
-  const testBankAccountCharge: IOpenPay.Charge.CreateFromBank = {
+  const testBankAccountCharge: IOpenpay.Charge.CreateFromBank = {
     amount: 50,
     method: 'bank_account',
     customer: testCustomer,
     description: 'Test bank account charge',
   };
 
-  const testStoreCharge: IOpenPay.Charge.CreateFromStore = {
+  const testStoreCharge: IOpenpay.Charge.CreateFromStore = {
     amount: 50,
     method: 'store',
     customer: testCustomer,
     description: 'Test store charge',
   };
 
-  const testRefund: IOpenPay.Charge.RefundInput = { description: 'Testing refund' };
+  const testRefund: IOpenpay.Charge.RefundInput = { description: 'Testing refund' };
 
   describe('Test charges API', () => {
     it('should get all charges', async () => {
@@ -346,7 +346,7 @@ describe('Test the OpenPay México SDK', () => {
   let testPayoutTxnId = '';
   let testCustomerPayoutTxnId = '';
 
-  const testCardPayout: IOpenPay.Payout.CreateInput = {
+  const testCardPayout: IOpenpay.Payout.CreateInput = {
     amount: 1.5,
     method: 'card',
     description: 'Test card payout',
@@ -357,7 +357,7 @@ describe('Test the OpenPay México SDK', () => {
     },
   };
 
-  const testBankPayout: IOpenPay.Payout.CreateInput = {
+  const testBankPayout: IOpenpay.Payout.CreateInput = {
     amount: 1.5,
     method: 'bank_account',
     description: 'Test bank payout',
@@ -487,7 +487,7 @@ describe('Test the OpenPay México SDK', () => {
   ////////////////////////////////
 
   let testPlanId = '';
-  const testPlan: IOpenPay.Plan.CreateInput = {
+  const testPlan: IOpenpay.Plan.CreateInput = {
     name: 'Test plan',
     amount: 15.0,
     trial_days: 30,

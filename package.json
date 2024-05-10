@@ -1,7 +1,7 @@
 {
   "name": "openpay",
   "description": "Openpay library",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "repository": "https://github.com/open-pay/openpay-node",
   "type": "module",
   "sideEffects": false,

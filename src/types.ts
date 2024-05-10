@@ -1,4 +1,4 @@
-export namespace IOpenPay {
+export namespace IOpenpay {
   export type Countries = 'mx' | 'co' | 'pe';
   export type Currency = 'MXN' | 'USD' | 'COP' | 'PEN';
   export type PaymentMonths = 3 | 6 | 9 | 12 | 18;

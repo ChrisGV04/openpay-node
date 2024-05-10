@@ -67,7 +67,7 @@ This SDK is built for Node.js v14.0.0 and above, but might be compatible with ol
 To instantiate the Openpay SDK, yo need to pass the following configurations:
 
 ```ts
-import { OpenPay } from "openpay";
+import { Openpay } from "openpay";
 
 const openpay = new Openpay({
   // Options

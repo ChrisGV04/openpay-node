@@ -1,10 +1,10 @@
-import type { IOpenPay } from '../dist/openpay';
+import type { IOpenpay } from '../dist/openpay';
 
 import { assert, describe, expect, it } from 'vitest';
-import { OpenPay } from '../dist/openpay';
+import { Openpay } from '../dist/openpay';
 
-describe('Test the OpenPay Perú SDK', () => {
-  const openpay = new OpenPay({
+describe('Test the Openpay Perú SDK', () => {
+  const openpay = new Openpay({
     merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
@@ -21,7 +21,7 @@ describe('Test the OpenPay Perú SDK', () => {
 
   let testWebhookId = '';
 
-  const testWebhook: IOpenPay.Webhook.CreateInput = {
+  const testWebhook: IOpenpay.Webhook.CreateInput = {
     url: process.env.OPENPAY_WEBHOOK_TEST_URL ?? '',
     event_types: [
       'charge.refunded',
@@ -59,7 +59,7 @@ describe('Test the OpenPay Perú SDK', () => {
   ////////////////////////////////
 
   let testCustomerId = '';
-  const testCustomer: IOpenPay.Customer.CreateInput = {
+  const testCustomer: IOpenpay.Customer.CreateInput = {
     name: 'Marco',
     last_name: 'Morales Pérez',
     email: 'marco@ejemplo.com',
@@ -111,7 +111,7 @@ describe('Test the OpenPay Perú SDK', () => {
   let testCardId = '';
   let testCustomerCardId = '';
 
-  const testCard: IOpenPay.Card.CreateInput = {
+  const testCard: IOpenpay.Card.CreateInput = {
     card_number: '4111111111111111',
     holder_name: testCustomer.name,
     expiration_year: validExpYear,
@@ -162,7 +162,7 @@ describe('Test the OpenPay Perú SDK', () => {
   let testTxnId = '';
   let testCustomerTxnId = '';
 
-  const testExistingCardCharge: IOpenPay.Charge.CreateFromCard = {
+  const testExistingCardCharge: IOpenpay.Charge.CreateFromCard = {
     amount: 716,
     source_id: '',
     method: 'card',
@@ -172,7 +172,7 @@ describe('Test the OpenPay Perú SDK', () => {
     description: 'Test existing card charges',
   };
 
-  const testStoreCharge: IOpenPay.Charge.CreateFromStore = {
+  const testStoreCharge: IOpenpay.Charge.CreateFromStore = {
     amount: 716,
     method: 'store',
     currency: 'PEN',
@@ -245,7 +245,7 @@ describe('Test the OpenPay Perú SDK', () => {
   ////////////////////////////////
 
   let testPlanId = '';
-  const testPlan: IOpenPay.Plan.CreateInput = {
+  const testPlan: IOpenpay.Plan.CreateInput = {
     name: 'Test plan',
     amount: 15.0,
     trial_days: 30,
@@ -319,7 +319,7 @@ describe('Test the OpenPay Perú SDK', () => {
 
   let testTokenId = '';
 
-  const testToken: IOpenPay.Token.CreateInput = {
+  const testToken: IOpenpay.Token.CreateInput = {
     card_number: '4111111111111111',
     holder_name: 'Juan Perez Ramirez',
     expiration_year: validExpYear,
@@ -358,7 +358,7 @@ describe('Test the OpenPay Perú SDK', () => {
 
   let testCheckoutId = '';
 
-  const testCheckout: IOpenPay.Checkout.CreateInput = {
+  const testCheckout: IOpenpay.Checkout.CreateInput = {
     amount: 250,
     currency: 'PEN',
     send_email: false,

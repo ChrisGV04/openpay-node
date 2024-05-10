@@ -1,5 +1,5 @@
 import type { FetchOptions } from 'ofetch';
-import type { IOpenPay } from './types';
+import type { IOpenpay } from './types';
 
 import { ofetch } from 'ofetch';
 
@@ -8,9 +8,9 @@ const OPEN_PAY_MX_SANDBOX_URL = 'https://sandbox-api.openpay.mx';
 const OPEN_PAY_API_VERSION = 'v1';
 const OPEN_PAY_SANDBOX_API_VERSION = 'v1';
 
-export { IOpenPay } from './types';
+export { IOpenpay } from './types';
 
-export class OpenPay {
+export class Openpay {
   private merchantId: string;
   private privateKey: string;
   private isSandbox: boolean;
@@ -19,7 +19,7 @@ export class OpenPay {
   private baseUrl = OPEN_PAY_MX_BASE_URL;
   private sandboxUrl = OPEN_PAY_MX_SANDBOX_URL;
 
-  constructor(options: IOpenPay.Options) {
+  constructor(options: IOpenpay.Options) {
     this.merchantId = options.merchantId;
     this.privateKey = options.privateKey;
     this.isSandbox = !options.isProductionReady;
@@ -31,7 +31,7 @@ export class OpenPay {
     this.timeout = ms;
   }
 
-  private setBaseUrl(countryCode: IOpenPay.Countries) {
+  private setBaseUrl(countryCode: IOpenpay.Countries) {
     switch (countryCode) {
       case 'pe':
         this.baseUrl = 'https://api.openpay.pe';
@@ -42,7 +42,7 @@ export class OpenPay {
         this.sandboxUrl = 'https://sandbox-api.openpay.co';
         break;
       default:
-        if (countryCode !== 'mx') console.error('(OpenPay): Invalid country code. Setting MX as default.');
+        if (countryCode !== 'mx') console.error('(Openpay): Invalid country code. Setting MX as default.');
         this.baseUrl = OPEN_PAY_MX_BASE_URL;
         this.sandboxUrl = OPEN_PAY_MX_SANDBOX_URL;
         break;
@@ -54,7 +54,6 @@ export class OpenPay {
       ? `${this.sandboxUrl}/${OPEN_PAY_SANDBOX_API_VERSION}/${apiPath}`
       : `${this.baseUrl}/${OPEN_PAY_API_VERSION}/${apiPath}`;
 
-    // TODO: Test requests
     return await ofetch<T>(url, {
       ...options,
       timeout: this.timeout,
@@ -68,7 +67,6 @@ export class OpenPay {
   private async sendStoreRequest<T>(apiPath: string, options: FetchOptions<'json'>): Promise<T> {
     const url = this.isSandbox ? `${this.sandboxUrl}/${apiPath}` : `${this.baseUrl}/${apiPath}`;
 
-    // TODO: Test requests
     return await ofetch(url, {
       ...options,
       timeout: this.timeout,
@@ -79,7 +77,7 @@ export class OpenPay {
     });
   }
 
-  public charges: IOpenPay.SDK.Charges = {
+  public charges: IOpenpay.SDK.Charges = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/charges`, {
         method: 'POST',
@@ -103,7 +101,7 @@ export class OpenPay {
       }),
   };
 
-  public payouts: IOpenPay.SDK.Payouts = {
+  public payouts: IOpenpay.SDK.Payouts = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/payouts`, {
         method: 'POST',
@@ -115,7 +113,7 @@ export class OpenPay {
     get: async (txnId) => await this.sendRequest(`${this.merchantId}/payouts/${txnId}`),
   };
 
-  public fees: IOpenPay.SDK.Fees = {
+  public fees: IOpenpay.SDK.Fees = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/fees`, {
         method: 'POST',
@@ -125,7 +123,7 @@ export class OpenPay {
     list: async (query) => await this.sendRequest(`${this.merchantId}/fees`, { query }),
   };
 
-  public customers: IOpenPay.SDK.Customers = {
+  public customers: IOpenpay.SDK.Customers = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/customers`, {
         method: 'POST',
@@ -285,7 +283,7 @@ export class OpenPay {
     },
   };
 
-  public cards: IOpenPay.SDK.Cards = {
+  public cards: IOpenpay.SDK.Cards = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/cards`, {
         method: 'POST',
@@ -306,7 +304,7 @@ export class OpenPay {
       }),
   };
 
-  public plans: IOpenPay.SDK.Plans = {
+  public plans: IOpenpay.SDK.Plans = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/plans`, {
         method: 'POST',
@@ -327,7 +325,7 @@ export class OpenPay {
       }),
   };
 
-  public webhooks: IOpenPay.SDK.Webhooks = {
+  public webhooks: IOpenpay.SDK.Webhooks = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/webhooks`, {
         method: 'POST',
@@ -342,7 +340,7 @@ export class OpenPay {
       await this.sendRequest(`${this.merchantId}/webhooks/${webhookId}`, { method: 'DELETE' }),
   };
 
-  public tokens: IOpenPay.SDK.Tokens = {
+  public tokens: IOpenpay.SDK.Tokens = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/tokens`, {
         method: 'POST',
@@ -352,11 +350,11 @@ export class OpenPay {
     get: async (tokenId) => await this.sendRequest(`${this.merchantId}/tokens/${tokenId}`),
   };
 
-  public stores: IOpenPay.SDK.Stores = {
+  public stores: IOpenpay.SDK.Stores = {
     list: async (query) => await this.sendStoreRequest('stores', { query }),
   };
 
-  public pse: IOpenPay.SDK.Pse = {
+  public pse: IOpenpay.SDK.Pse = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/charges`, {
         method: 'POST',
@@ -364,7 +362,7 @@ export class OpenPay {
       }),
   };
 
-  public checkouts: IOpenPay.SDK.Checkouts = {
+  public checkouts: IOpenpay.SDK.Checkouts = {
     create: async (data) =>
       await this.sendRequest(`${this.merchantId}/checkouts`, {
         method: 'POST',
@@ -382,9 +380,4 @@ export class OpenPay {
         query: { status },
       }),
   };
-}
-
-// TODO: Remove. Only used to test IDE intellisense
-async function main() {
-  const client = new OpenPay({ isProductionReady: false, merchantId: '', privateKey: '', countryCode: 'mx' });
 }

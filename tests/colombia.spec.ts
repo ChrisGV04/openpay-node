@@ -1,10 +1,10 @@
-import type { IOpenPay } from '../dist/openpay';
+import type { IOpenpay } from '../dist/openpay';
 
 import { assert, describe, expect, it } from 'vitest';
-import { OpenPay } from '../dist/openpay';
+import { Openpay } from '../dist/openpay';
 
-describe('Test the OpenPay Colombia SDK', () => {
-  const openpay = new OpenPay({
+describe('Test the Openpay Colombia SDK', () => {
+  const openpay = new Openpay({
     merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
@@ -21,7 +21,7 @@ describe('Test the OpenPay Colombia SDK', () => {
 
   let testWebhookId = '';
 
-  const testWebhook: IOpenPay.Webhook.CreateInput = {
+  const testWebhook: IOpenpay.Webhook.CreateInput = {
     url: process.env.OPENPAY_WEBHOOK_TEST_URL ?? '',
     user: 'juanito',
     password: 'supersecure',
@@ -61,7 +61,7 @@ describe('Test the OpenPay Colombia SDK', () => {
   ////////////////////////////////
 
   let testCustomerId = '';
-  const testCustomer: IOpenPay.Customer.CreateInput = {
+  const testCustomer: IOpenpay.Customer.CreateInput = {
     name: 'Juan',
     last_name: 'Pérez',
     email: 'juan@ejemplo.com',
@@ -112,7 +112,7 @@ describe('Test the OpenPay Colombia SDK', () => {
 
   let testCardId = '';
   let testCustomerCardId = '';
-  const testCard: IOpenPay.Card.CreateInput = {
+  const testCard: IOpenpay.Card.CreateInput = {
     card_number: '4111111111111111',
     holder_name: testCustomer.name,
     expiration_year: validExpYear,
@@ -163,7 +163,7 @@ describe('Test the OpenPay Colombia SDK', () => {
   let testTxnId = '';
   let testCustomerTxnId = '';
 
-  const testExistingCardCharge: IOpenPay.Charge.CreateFromCard = {
+  const testExistingCardCharge: IOpenpay.Charge.CreateFromCard = {
     amount: 200,
     source_id: '',
     method: 'card',
@@ -173,7 +173,7 @@ describe('Test the OpenPay Colombia SDK', () => {
     description: 'Test existing card charges',
   };
 
-  const testStoreCharge: IOpenPay.Charge.CreateFromStore = {
+  const testStoreCharge: IOpenpay.Charge.CreateFromStore = {
     amount: 50,
     method: 'store',
     currency: 'COP',
@@ -181,7 +181,7 @@ describe('Test the OpenPay Colombia SDK', () => {
     description: 'Test store charge',
   };
 
-  const testRefund: IOpenPay.Charge.RefundInput = { description: 'Testing refund' };
+  const testRefund: IOpenpay.Charge.RefundInput = { description: 'Testing refund' };
 
   describe('Test charges API', () => {
     it('should get all charges', async () => {
@@ -259,7 +259,7 @@ describe('Test the OpenPay Colombia SDK', () => {
   ////////////////////////////////
 
   let testPlanId = '';
-  const testPlan: IOpenPay.Plan.CreateInput = {
+  const testPlan: IOpenpay.Plan.CreateInput = {
     name: 'Test plan',
     amount: 150,
     trial_days: 30,
@@ -331,7 +331,7 @@ describe('Test the OpenPay Colombia SDK', () => {
   //  PSE TESTS
   ////////////////////////////////
 
-  const testPse: IOpenPay.Charge.CreateFromBank = {
+  const testPse: IOpenpay.Charge.CreateFromBank = {
     method: 'bank_account',
     amount: 10000,
     currency: 'COP',
@@ -378,7 +378,7 @@ describe('Test the OpenPay Colombia SDK', () => {
 
   let testTokenId = '';
 
-  const testToken: IOpenPay.Token.CreateInput = {
+  const testToken: IOpenpay.Token.CreateInput = {
     card_number: '4111111111111111',
     holder_name: 'Juan Perez Ramirez',
     expiration_year: validExpYear,
