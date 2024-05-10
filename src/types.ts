@@ -180,10 +180,10 @@ export namespace IOpenpay {
   export namespace Token {
     export interface CreateInput {
       holder_name: string;
-      card_number: string; // TODO: Test type. Docs have mixed type (number, string)
+      card_number: string;
       cvv2: string;
-      expiration_month: string; // TODO: Test type. Docs have mixed type (number, string)
-      expiration_year: string; // TODO: Test type. Docs have mixed type (number, string)
+      expiration_month: string;
+      expiration_year: string;
       address: Address;
     }
   }
@@ -326,7 +326,7 @@ export namespace IOpenpay {
       logo: string;
       thumb: string;
       max_amount: number;
-    }; // TODO: Check if this can be null
+    };
   }
 
   export namespace Store {
