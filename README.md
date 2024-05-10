@@ -51,7 +51,7 @@ await openpay.<resource>.<method>()
 
 - ESM and Typescript support
 - Async/await support
-- Production/Sanbox environments
+- Production/Sandbox environments
 - Only 1 dependency. Uses [`ofetch`](https://github.com/unjs/ofetch) for simple data fetching
 - API errors are thrown by `ofetch`. Use try/catch to handle them gracefully
 
@@ -173,7 +173,7 @@ const input: IOpenpay.Charge.CreateFromCard = {
 };
 
 try {
-  const transaction = await openpay.charges.create(inpu);
+  const transaction = await openpay.charges.create(input);
   console.log("The newly created transaction:", transaction);
 } catch (error) {
   console.error("Openpay API error:", error);
@@ -195,7 +195,7 @@ The project uses [Biome](https://biomejs.dev/) for linting and formatting. If yo
 
 ### 🧪 Tests
 
-This project runs tests using Vitest with Typescript.
+This project runs tests using [Vitest](https://vitest.dev/) with Typescript.
 
 There are 3 test files available:
 
@@ -234,4 +234,4 @@ pnpm test:pe
 > The tests depend on having `OPENPAY_MERCHANT_ID` and `OPENPAY_PRIVATE_KEY` from an account created in the country you're running the tests on. For example: if you want to run `pnpm test:co`, you must use a merchant ID and private key from an account created in Openpay Colombia. Otherwise the tests will fail.
 
 > [!NOTE]
-> For México tests, the transfers and fees API's might faile since they require the customer to have funds, but the account created during the test won't have any. If you get a different error, please check your implementation.
+> For México tests, the transfers and fees API's might fail since they require the customer to have funds, but the account created during the test won't have any. If you get a different error, please check your implementation.
