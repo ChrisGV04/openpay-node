@@ -217,6 +217,12 @@ To run the tests, you must create a `.env.testing` file. Use [`.env.example`](/.
 > [!NOTE]
 > Please make sure you use your merchant ID and private key for a **SANDBOX** environment. All tests will run on sandbox mode, so passing production values will cause every test to fail.
 
+Before running the tests, you must build the package:
+
+```bash
+pnpm build
+```
+
 Now, you can run the tests for a specific country with their own script:
 
 ```bash
