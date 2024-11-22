@@ -14,6 +14,7 @@ export class Openpay {
   private merchantId = '';
   private privateKey = '';
   private isSandbox = true;
+  private clientIP = '';
   private timeout = 9000; // 9 seconds in milliseconds
 
   private baseUrl = OPEN_PAY_MX_BASE_URL;
@@ -23,6 +24,7 @@ export class Openpay {
     this.setMerchantId(options.merchantId);
     this.setPrivateKey(options.privateKey);
     this.setProductionReady(options.isProductionReady);
+    this.setClientIP(options.clientIP);
     this.setCountryCode(options.countryCode ?? 'mx');
   }
 
@@ -44,6 +46,16 @@ export class Openpay {
 
   public setCountryCode(code: IOpenpay.Countries) {
     this.setBaseUrl(code);
+  }
+
+  public setClientIP(ipAddress: string) {
+    const isValid = new RegExp(/^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/).test(ipAddress);
+    if (!isValid) {
+      console.error('(Openpay): Invalid client IP address');
+      throw new Error('(Openpay): Invalid client IP address');
+    }
+
+    this.clientIP = ipAddress;
   }
 
   private setBaseUrl(countryCode: IOpenpay.Countries) {
@@ -74,6 +86,7 @@ export class Openpay {
       timeout: this.timeout,
       method: options?.method || 'GET',
       headers: {
+        'X-Forwarded-For': this.clientIP,
         Authorization: `Basic ${Buffer.from(`${this.privateKey}:`).toString('base64')}`,
       },
     });

@@ -9,6 +9,7 @@ describe('Test the Openpay Perú SDK', () => {
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
     countryCode: 'pe',
+    clientIP: '127.0.0.1',
   });
   const device_session_id = process.env.OPENPAY_DEVICE_SESSION_ID ?? '';
 
@@ -403,6 +404,7 @@ describe('Test the Openpay Perú SDK', () => {
 
     it('should create a customer checkout', async () => {
       const { customer, order_id, ...data } = testCheckout;
+      // @ts-expect-error Perú doesn't expect the customer info
       const checkout = await openpay.customers.checkouts.create(testCustomerId, {
         ...data,
         order_id: (Date.now() + 1).toString(),

@@ -9,6 +9,7 @@ describe('Test the Openpay Colombia SDK', () => {
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
     countryCode: 'co',
+    clientIP: '127.0.0.1',
   });
   const device_session_id = process.env.OPENPAY_DEVICE_SESSION_ID ?? '';
 

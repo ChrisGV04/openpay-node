@@ -40,11 +40,12 @@ const openpay = new Openpay({
   merchantId: process.env.OPENPAY_MERCHANT_ID ?? '',
   privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
   isProductionReady: false,
+  clientIP: '127.0.0.1', // Public IP address of the client
   countryCode: 'mx',
-})
+});
 
 // Use the API
-await openpay.<resource>.<method>()
+await openpay.<resource>.<method>();
 ```
 
 ## ✔️ Features
@@ -80,6 +81,7 @@ const openpay = new Openpay({
 | privateKey        | `string`                   | Your unique private key from the Openpay dashboard                                                                    |
 | isProductionReady | `boolean`                  | If `false`, all methods will call the Sandbox API. Otherwise, the Production API will be used.                        |
 | countryCode?      | `"mx"` \| `"co"` \| `"pe"` | The country to use the API from. Only México (`mx`), Colombia (`co`) and Perú (`pe`) are supported. Defaults to `mx`. |
+| clientIP          | `string`                   | The IP address of the client making the request. Required for charges anti-fraud system.                              |
 
 If your application supports multiple countries, or you have multiple merchant accounts, we recommend creating an `Openpay` instance for each country/merchant to avoid accidentally using the wrong API.
 
@@ -88,6 +90,7 @@ However, if you need to change any of these configurations after instantiation, 
 ```ts
 openpay.setMerchantId("new-merchant-id");
 openpay.setPrivateKey("new-private-key");
+openpay.setClientIP("127.0.0.1");
 openpay.setProductionReady(true);
 openpay.setCountryCode("co");
 ```

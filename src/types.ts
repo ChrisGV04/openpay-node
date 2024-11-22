@@ -16,6 +16,7 @@ export namespace IOpenpay {
     merchantId: string;
     privateKey: string;
     isProductionReady: boolean;
+    clientIP: string;
     countryCode?: Countries;
   }
 

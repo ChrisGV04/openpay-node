@@ -11,6 +11,7 @@ describe('Test the Openpay México SDK', () => {
     privateKey: process.env.OPENPAY_PRIVATE_KEY ?? '',
     isProductionReady: false,
     countryCode: 'mx',
+    clientIP: '127.0.0.1',
   });
   const device_session_id = process.env.OPENPAY_DEVICE_SESSION_ID ?? '';
 

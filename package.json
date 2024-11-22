@@ -17,7 +17,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "rimraf dist && tsup src/*.ts --format cjs,esm --dts --no-splitting",
+    "build": "rimraf dist && tsup src/openpay.ts --format cjs,esm --dts --no-splitting",
     "lint": "biome lint ./src",
     "test:mx": "vitest run mexico",
     "test:co": "vitest run colombia",
